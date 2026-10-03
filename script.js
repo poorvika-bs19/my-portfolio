@@ -82,3 +82,40 @@ document.querySelectorAll('.card, .item, .resume-card').forEach(function (el) {
   el.classList.add('reveal');
   fade.observe(el);
 });
+
+// 6. Typing effect
+var words = ['AI-powered web apps', 'Python projects', 'multilingual chatbots', 'data analytics work'];
+var typeEl = document.getElementById('type');
+var wi = 0, ci = 0, del = false;
+function tick() {
+  var w = words[wi];
+  typeEl.textContent = w.slice(0, ci);
+  if (!del && ci === w.length) { del = true; return setTimeout(tick, 1400); }
+  if (del && ci === 0) { del = false; wi = (wi + 1) % words.length; }
+  ci += del ? -1 : 1;
+  setTimeout(tick, del ? 35 : 70);
+}
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { typeEl.textContent = words[0]; } else { tick(); }
+
+// 7. Count-up numbers
+var counter = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (!e.isIntersecting) return;
+    var el = e.target, to = parseFloat(el.dataset.to), dec = el.dataset.to.indexOf('.') > -1 ? 1 : 0, t0 = null;
+    function step(t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / 1200, 1);
+      el.textContent = (to * p).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    counter.unobserve(el);
+  });
+});
+document.querySelectorAll('.stats b').forEach(function (b) { counter.observe(b); });
+
+// 8. Soft light that follows the mouse
+var glow = document.getElementById('glow');
+window.addEventListener('mousemove', function (e) {
+  glow.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+});
